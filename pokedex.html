@@ -1,0 +1,114 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="light">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Document</title>
+    <link
+      href="https://cdn.jsdelivr.net/npm/daisyui@4.12.10/dist/full.min.css"
+      rel="stylesheet"
+      type="text/css"
+    />
+    <script src="https://cdn.tailwindcss.com"></script>
+  </head>
+  <body class="bg-gradient-to-b from-gray-700">
+    <div id="app">
+      <div
+        class="flex flex-col gap-10 p-4 justify-center items-center h-auto bg-gradient-to-b from-gray-800 max-w-4xl m-auto"
+      >
+        <div class="flex flex-col gap-5">
+          <img src="pokeapi.png" style="width: 100%" />
+
+          <label class="input input-bordered flex items-center gap-2 w-96">
+            <input type="text" placeholder="Cari Pokemon" class="flex-1" />
+            <svg
+              xmlns="http://www.w3.org/2000/svg"
+              viewBox="0 0 16 16"
+              fill="currentColor"
+              class="h-4 w-4 opacity-70"
+            >
+              <path
+                fill-rule="evenodd"
+                d="M9.965 11.026a5 5 0 1 1 1.06-1.06l2.755 2.754a.75.75 0 1 1-1.06 1.06l-2.755-2.754ZM10.5 7a3.5 3.5 0 1 1-7 0 3.5 3.5 0 0 1 7 0Z"
+                clip-rule="evenodd"
+              />
+            </svg>
+          </label>
+        </div>
+
+        <div class="grid grid-cols-3 w-full" v-if="!viewDetail">
+          <div v-for="(i, index) in data" class="flex justify-center">
+            <div
+              class="flex flex-col items-center card bg-base-300 gap-3 mb-10 w-52 shadow-xl"
+              @click="getDetailPokemon(i.name)"
+            >
+              <figure>
+                <img
+                  :src="i.sprites ? i.sprites.front_default : ''"
+                  :alt="i.name"
+                />
+              </figure>
+              <div class="pb-5">{{i.name}} {{index + 1}}</div>
+            </div>
+          </div>
+        </div>
+
+        <div v-else>
+          <h1>Detail Pokemon</h1>
+          <button class="btn" @click="viewDetail=false">
+            View All pokemon
+          </button>
+        </div>
+      </div>
+    </div>
+
+    <script type="module">
+      import { createApp } from "https://unpkg.com/vue@3/dist/vue.esm-browser.js";
+
+      createApp({
+        data() {
+          return {
+            data: [],
+            viewDetail: false,
+            // dataDetail: [],
+            // indexPokemon: 0,
+          };
+        },
+        methods: {
+          async getEachPokemon(result) {
+            const response = await fetch(
+              "https://pokeapi.co/api/v2/pokemon/" + result.name
+            );
+            const data = await response.json();
+            // console.log("🚀 ~ getEachPokemon ~ data:", data);
+            this.data.push(data);
+          },
+          async getDetailPokemon(indexPokemon) {
+            const response = await fetch(
+              "https://pokeapi.co/api/v2/pokemon/" + indexPokemon
+            );
+            const data = await response.json();
+            this.viewDetail = true;
+            console.log("🚀 ~ getDetailPokemon ~ data:", data);
+          },
+        },
+        mounted() {
+          const getPokemon = async () => {
+            const response = await fetch("https://pokeapi.co/api/v2/pokemon/");
+            const data = await response.json();
+            const pokemon = data.results;
+            // console.log(data.results);
+
+            pokemon.forEach((pokemon) => {
+              // console.log(pokemon);
+              this.getEachPokemon(pokemon);
+              this.data.sort((a, b) => a.id - b.id);
+            });
+          };
+
+          getPokemon();
+        },
+      }).mount("#app");
+    </script>
+  </body>
+</html>
