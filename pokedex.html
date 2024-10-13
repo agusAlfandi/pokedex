@@ -70,8 +70,6 @@
           return {
             data: [],
             viewDetail: false,
-            // dataDetail: [],
-            // indexPokemon: 0,
           };
         },
         methods: {
@@ -80,7 +78,6 @@
               "https://pokeapi.co/api/v2/pokemon/" + result.name
             );
             const data = await response.json();
-            // console.log("🚀 ~ getEachPokemon ~ data:", data);
             this.data.push(data);
           },
           async getDetailPokemon(indexPokemon) {
@@ -97,10 +94,8 @@
             const response = await fetch("https://pokeapi.co/api/v2/pokemon/");
             const data = await response.json();
             const pokemon = data.results;
-            // console.log(data.results);
 
             pokemon.forEach((pokemon) => {
-              // console.log(pokemon);
               this.getEachPokemon(pokemon);
               this.data.sort((a, b) => a.id - b.id);
             });
